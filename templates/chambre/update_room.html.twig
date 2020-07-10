@@ -1,0 +1,20 @@
+{% extends "base.html.twig" %}
+{% block title 'Gestion des Chambres' %}
+{% block body %}
+
+    <div class="container" style="background-color: white; border: solid 1px silver; border-radius: 5px; padding: 10px">
+        <h2>Formulaire de modification chambre</h2>
+        <span>Note: Veuillez choisir un numéro de batiment et le numéro de chambre sera généré automatiquement.</span>
+        <br><br><br>
+
+        {{ form_start(form) }}
+        <div class="row">
+            <div class="col-md-6">{{ form_row(form.num_batiment)}}</div>
+            <div class="col-md-6">{{ form_row(form.type_chambre)}}</div>
+        </div>
+        <button class="btn btn-primary" type="submit">Modifier</button>
+        {{ form_end(form) }}
+    </div>
+
+
+{% endblock %}

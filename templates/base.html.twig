@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity=""></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity=""></script>
+        <link rel="stylesheet" href="{{ asset('build/app.css') }}" />
+        {% block stylesheets %}{% endblock %}
+        <style>
+            body{
+                background-color: gainsboro;
+
+            }
+            a{
+                text-decoration: none;
+                color: white;
+            }
+
+
+        </style>
+    </head>
+    <body>
+    <nav class="navbar navbar-dark bg-primary  navbar-static-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{{ path('home') }}">Sonatel Academy</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="{{ path('home') }}">Acceuil</a></li>
+                <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Gestion des étudiants<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ path('save_student.index') }}">Enregistrement étudiant</a></li>
+                        <li><a href="{{ path('list_student.index') }}">Liste des étudiants</a></li>
+
+                    </ul>
+                </li>
+                <li  class="dropdown {% if current_menu is defined and current_menu == 'activation' %}active{% endif%}"><a  class="dropdown-toggle" data-toggle="dropdown" href="#">Gestion des chambres<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ path('save_room.index') }}">Enregistrement chambre</a></li>
+                        <li><a href="{{ path('list_room.index') }}">Liste des chambres</a></li>
+
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+    </nav>
+        {% block body %}{% endblock %}
+        <script src="{{ asset('build/app.js') }}"></script>
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>
