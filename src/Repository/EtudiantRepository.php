@@ -3,7 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Etudiant;
+use App\Entity\EtudiantSearch;
+use App\Form\EtudiantSearchType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -20,19 +23,46 @@ class EtudiantRepository extends ServiceEntityRepository
     }
 
      /**
-      * @return Etudiant[] Returns an array of Etudiant objects
+      * @return Query
       */
 
-    public function findByExampleField($value)
+    public function findAllVisibleQuery(EtudiantSearch $search): Query
     {
-        return $this->createQueryBuilder('e')
-            ->andWhere('e.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('e.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+
+
+
+        $query = $this->createQueryBuilder('e')
+            ->andWhere('e.status = :val')
+            ->setParameter('val', 'actif');
+
+            if($search->getPrenom())
+            {
+                $query= $query
+                    ->andWhere('e.prenom= :prenom')
+                    ->setParameter('prenom', $search->getPrenom());
+            }
+            if($search->getNom())
+            {
+                $query= $query
+                    ->andWhere('e.nom= :nom')
+                    ->setParameter('nom', $search->getNom());
+            }
+            if($search->getDepartement())
+            {
+                $query= $query
+                    ->andWhere('e.departement = :depart')
+                    ->setParameter('depart',$search->getDepartement());
+            }
+            if($search->getTypeEtudiant())
+            {
+                $query= $query
+                    ->andWhere('e.type_etudiant= :type')
+                    ->setParameter('type', $search->getTypeEtudiant());
+            }
+
+            return $query->getQuery();
+            //$query->getResult();
+
     }
 
 

@@ -67,6 +67,11 @@ class Etudiant
      */
     private $num_chambre;
 
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $status;
+
 
     public function getId(): ?int
     {
@@ -190,6 +195,18 @@ class Etudiant
     public function setNumChambre(?Chambre $num_chambre): self
     {
         $this->num_chambre = $num_chambre;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }

@@ -2,7 +2,11 @@
 namespace App\Controller;
 
 use App\Entity\Chambre;
+use App\Entity\EtudiantSearch;
 use App\Form\ChambreType;
+use App\Form\EtudiantSearchType;
+use Doctrine\ORM\Query;
+use Doctrine\Persistence\ObjectManager;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,9 +14,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Etudiant;
 use App\Form\EtudiantType;
+use App\Repository\EtudiantRepository;
 
 class EtudiantController extends AbstractController
 {
+
+
+    // Fin de mon test
     private function generer($num)
     {
         if(strlen($num)==1)
@@ -54,8 +62,15 @@ class EtudiantController extends AbstractController
             $year = date('Y');
             $matricule = $year."-".$nams."-".$pren."-".$code;
             $etudiant->setMatricule($matricule);
+            $statu="actif";
+            $etudiant->setStatus($statu);
             $em->persist($etudiant);
             $em->flush();
+            $this->addFlash(
+                'notice',
+                'Etudiant(e) enregistré(e) avec succès!'
+            );
+            return $this->redirectToRoute('list_student.index');
         }
 
         return $this->render('etudiant/save_etudiant.html.twig', [
@@ -70,14 +85,20 @@ class EtudiantController extends AbstractController
      */
     public function ListStudent(Request $request, PaginatorInterface $paginator):Response
     {
+        $search = new EtudiantSearch();
+        $form =$this->createForm(EtudiantSearchType::class, $search);
+        $form->handleRequest($request);
         $em = $this->getDoctrine()->getManager();
-        //$rooms = $em->getRepository(Chambre::class)->findAll();
+        //$student = $this->findAllVisibleQuery($search);
+        $etudiant = $em->getRepository(Etudiant::class)->findAllVisibleQuery($search);
+        //Nouvelle méthode: elle permet d'afficher seulement les étudiants non supprimés
 
-        $dql   = "SELECT etudiant FROM App:Etudiant etudiant";
-        $student = $em->createQuery($dql);
-
+     //   $dql   = "SELECT etudiant FROM App:Etudiant etudiant WHERE etudiant.status='actif'";
+      // $students = $em->createQuery($student);
+      // $student = $stmt->fetch();
+       dump($etudiant);
         $pagination= $paginator->paginate(
-            $student,
+            $etudiant,
             $request->query->getInt('page', 1),
             5
         );
@@ -85,7 +106,8 @@ class EtudiantController extends AbstractController
 
         return $this->render('etudiant/list_etudiant.html.twig', [
             'etudiants' => $pagination,
-            'current_menu' => 'activation'
+            'current_menu' => 'activation',
+            'form' => $form->createView()
         ]);
     }
 
@@ -119,6 +141,27 @@ class EtudiantController extends AbstractController
             'form' => $form->createView(),
             'current_menu' => 'activation'
         ]);
+
+
+    }
+
+    /**
+     * @Route("/delete_student/{id}", name="delete_student.index")
+     * @return Response
+     */
+    public function DeleteStudent(Request $request, int $id):Response
+    {
+        $em       = $this->getDoctrine()->getManager();
+        $student = $em->getRepository(Etudiant::class)->find($id);
+                $statu= "deleted";
+            $student->setStatus($statu);
+
+            $em->flush();
+            $this->addFlash(
+                'notice',
+                'Etudiant(e) supprimé(e) avec succès!'
+            );
+            return $this->redirectToRoute('list_student.index');
 
 
     }

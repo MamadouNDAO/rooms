@@ -1,15 +1,41 @@
 {% extends "base.html.twig" %}
 {% block title 'Gestion des Chambres' %}
 {% block body %}
-{% dump(etudiants) %}
+
     {% for message in app.flashes('notice') %}
         <div class="flash-notice alert alert-success">
             {{ message }}
         </div>
     {% endfor %}
+    <div class="jumbotron">
+        <span>  Vous pouvez faire des filtres sur la liste des étudiants:</span>
+        <div class="container">
+            {{ form_start(form) }}
+            <div class="form-row">
+                <div class="col-md-2">
+                    {{ form_row(form.prenom) }}
+                </div>
+                <div class="col-md-2">
+                    {{ form_row(form.nom) }}
+                </div>
+                <div class="col-md-2">
+                    {{ form_row(form.typeEtudiant) }}
+                </div>
+                <div class="col-md-3">
+                    {{ form_row(form.departement) }}
+                </div>
+
+            </div>
+            <button class="btn btn-primary float-left ">Rechercher</button>
+
+            {{ form_end(form) }}
+        </div>
+
+    </div>
+
     <div class="container text-center" style="background-color: white; border: solid 1px silver; border-radius: 5px">
 
-        <nav class="navbar bg-primary navbar-static-top"><h1 >Liste des étudiants</h1></nav>
+        <nav class="navbar bg-primary"><h1 >Liste des étudiants</h1></nav>
         <button class="btn btn-success pull-right"><a href="{{ path('save_student.index') }}">+Ajouter</a></button>
         <br><br>
         <table class="table table-responsive table-striped table-bordered">
@@ -44,7 +70,7 @@
                     <td>{{ row.numChambre.numChambre }}</td>
 
                     <td><button class="btn btn-primary"><a href="{{ path('update_room.index', {'id': row.id}) }}">Modifier</a></button></td>
-                    <td><button class="btn btn-danger">Supprimer</button></td>
+                    <td><button class="btn btn-danger"><a href="{{ path('delete_student.index', {'id': row.id}) }}">Supprimer</a></button></td>
 
 
                 </tr>
