@@ -112,6 +112,14 @@ class EtudiantController extends AbstractController
                     );
                     return $this->redirectToRoute('list_student.index');
                 }
+            }elseif($typeRoom=='vide'){
+                $em->persist($etudiant);
+                $em->flush();
+                $this->addFlash(
+                    'notice',
+                    'Etudiant(e) enregistré(e) avec succès!'
+                );
+                return $this->redirectToRoute('list_student.index');
             }
 
         }
