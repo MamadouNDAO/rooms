@@ -35,9 +35,6 @@ class EtudiantType extends AbstractType
             ->add('num_chambre',  EntityType::class, [
                 'class' => Chambre::class,
                 'choice_label'=> 'num_chambre',
-                'attr'=> [
-                    'placeholder'=> 'Choisir num'
-                ]
             ]);
 
 

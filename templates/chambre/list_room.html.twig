@@ -8,8 +8,8 @@
         </div>
     {% endfor %}
     <div class="container" style="background-color: white; border: solid 1px silver; border-radius: 5px">
+        <nav class="navbar bg-primary text-center"><h1>Liste chambres</h1></nav>
 
-        <h1>Liste chambre</h1>
         <button class="btn btn-success pull-right"><a href="{{ path('save_room.index') }}">+Ajouter</a></button>
         <br><br>
         <table class="table table-striped table-bordered text-center">
@@ -35,7 +35,9 @@
 
 
                     <td><button class="btn btn-primary"><a href="{{ path('update_room.index', {'id': row.id}) }}">Modifier</a></button></td>
-                    <td><button class="btn btn-danger"><a href="{{ path('delete_room.index', {'id': row.id}) }}">Supprimer</a></button></td>
+                    <td>
+                        <button class="btn btn-danger"><a href="{{ path('delete_room.index', {'id': row.id}) }}">Supprimer</a></button>
+                    </td>
 
 
                 </tr>

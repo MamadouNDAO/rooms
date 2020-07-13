@@ -1,11 +1,16 @@
 {% extends "base.html.twig" %}
 {% block title 'Gestion des étudiant' %}
 {% block body %}
-
+    {% for message in app.flashes('notice') %}
+        <div class="flash-notice alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
     <div class="container" style="background-color: white; border: solid 1px silver; border-radius: 5px; padding: 10px">
-        <h1>Enregistrer étudiant</h1>
+        <nav class="navbar bg-primary text-center"><h1>Enregistrer étudiant</h1></nav>
 
-        {{ form_start(form) }}
+
+        {{ form_start(form,{attr:{'novalidate':'novalidate'}}) }}
         <div class="row">
             <div class="col-md-6">{{ form_row(form.prenom) }}</div>
             <div class="col-md-6">{{ form_row(form.nom) }}</div>

@@ -64,13 +64,56 @@ class EtudiantController extends AbstractController
             $etudiant->setMatricule($matricule);
             $statu="actif";
             $etudiant->setStatus($statu);
-            $em->persist($etudiant);
-            $em->flush();
-            $this->addFlash(
-                'notice',
-                'Etudiant(e) enregistré(e) avec succès!'
-            );
-            return $this->redirectToRoute('list_student.index');
+
+            // Je vérifie si la chambre est disponible ou pas
+            $conn = $em->getConnection();
+            $checkRoom = $etudiant->getNumChambre();
+            $typeRoom= $checkRoom->getTypeChambre();
+            $numRoom= $checkRoom->getNumChambre();
+            $idRoom= $checkRoom->getId();
+
+            $sql = 'SELECT * FROM Etudiant e WHERE e.num_chambre_id = :num';
+            $stmt = $conn->prepare($sql);
+            $stmt->execute(['num' => $idRoom]);
+            $momo= $stmt->fetchAll();
+
+            if($typeRoom=='individuel')
+            {
+                if(count($momo)==1){
+                    $this->addFlash(
+                        'notice',
+                        'La chambre que vous avez choisie est déjà allouée au maximum!'
+                    );
+                    return $this->redirectToRoute('save_student.index');
+                }elseif(count($momo)<1){
+                    $em->persist($etudiant);
+                    $em->flush();
+                    $this->addFlash(
+                        'notice',
+                        'Etudiant(e) enregistré(e) avec succès!'
+                    );
+                    return $this->redirectToRoute('list_student.index');
+                }
+
+            }elseif ($typeRoom=='A deux')
+            {
+                if(count($momo)==2){
+                    $this->addFlash(
+                        'notice',
+                        'La chambre que vous avez choisie est déjà allouée au maximum!'
+                    );
+                    return $this->redirectToRoute('save_student.index');
+                }elseif(count($momo)<2){
+                    $em->persist($etudiant);
+                    $em->flush();
+                    $this->addFlash(
+                        'notice',
+                        'Etudiant(e) enregistré(e) avec succès!'
+                    );
+                    return $this->redirectToRoute('list_student.index');
+                }
+            }
+
         }
 
         return $this->render('etudiant/save_etudiant.html.twig', [
@@ -91,19 +134,11 @@ class EtudiantController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         //$student = $this->findAllVisibleQuery($search);
         $etudiant = $em->getRepository(Etudiant::class)->findAllVisibleQuery($search);
-        //Nouvelle méthode: elle permet d'afficher seulement les étudiants non supprimés
-
-     //   $dql   = "SELECT etudiant FROM App:Etudiant etudiant WHERE etudiant.status='actif'";
-      // $students = $em->createQuery($student);
-      // $student = $stmt->fetch();
-       dump($etudiant);
         $pagination= $paginator->paginate(
             $etudiant,
             $request->query->getInt('page', 1),
             5
         );
-
-
         return $this->render('etudiant/list_etudiant.html.twig', [
             'etudiants' => $pagination,
             'current_menu' => 'activation',
@@ -115,7 +150,7 @@ class EtudiantController extends AbstractController
      * @Route("/update_student/{id}", name="update_student.index")
      * @return Response
      */
-    public function UpdateRoom(Request $request, int $id):Response
+    public function UpdateStudent(Request $request, int $id):Response
     {
         $em       = $this->getDoctrine()->getManager();
         $etudiant = $em->getRepository(Etudiant::class)->find($id);
@@ -124,20 +159,26 @@ class EtudiantController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid())
         {
-            $numBuild = $etudiant->getNumBatiment();
-            $id= $etudiant->getId();
-            $genered = $this->genererNum($id, $numBuild);
-            $etudiant->setMatricule($genered);
-
+            $nombre = $etudiant->getId();
+            $code= $this->generer($nombre);
+            $prenom = $etudiant->getPrenom();
+            $nom= $etudiant->getNom();
+            $pren = strtoupper(substr($prenom, -2));
+            $nams = strtoupper(substr($nom, 0,2));
+            $year = date('Y');
+            $matricule = $year."-".$nams."-".$pren."-".$code;
+            $etudiant->setMatricule($matricule);
+            $statu="actif";
+            $etudiant->setStatus($statu);
             $em->flush();
             $this->addFlash(
                 'notice',
-                'Chambre modifiée avec succès!'
+                'Etudiant(e) modifié(e) avec succès!'
             );
-            return $this->redirectToRoute('list_room.index');
+            return $this->redirectToRoute('list_student.index');
         }
 
-        return $this->render('chambre/update_room.html.twig', [
+        return $this->render('etudiant/update_etudiant.html.twig', [
             'form' => $form->createView(),
             'current_menu' => 'activation'
         ]);

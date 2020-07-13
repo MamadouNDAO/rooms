@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\EtudiantRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\EtudiantRepository", repositoryClass=EtudiantRepository::class)
@@ -24,16 +25,36 @@ class Etudiant
 
     /**
      * @ORM\Column(type="string", length=50)
+     * @Assert\NotBlank(message="Le champs ne doit pas etre vide")
+     * @Assert\Length(
+     * min = 2,
+     * max = 15,
+     * minMessage = "Votre nom doit contenir au moins {{limit}} caractères",
+     * maxMessage = "Votre nom ne doit pas dépasser les {{limit}} caractères ",
+     * allowEmptyString = false
+     * )
      */
     private $prenom;
 
     /**
      * @ORM\Column(type="string", length=50)
+     * @Assert\NotBlank(message="Le champs ne doit pas etre vide")
+     * @Assert\Length(
+     * min = 2,
+     * max = 15,
+     * minMessage = "Votre nom doit contenir au moins {{limit}} caractères",
+     * maxMessage = "Votre nom ne doit pas dépasser les {{limit}} caractères ",
+     * allowEmptyString = false
+     * )
      */
     private $nom;
 
     /**
      * @ORM\Column(type="string", length=50)
+     * @Assert\NotBlank(message="Le champs ne doit pas etre vide")
+     * @Assert\Email(
+     * message = "E-mail non valide."
+     * )
      */
     private $mail;
 
@@ -49,6 +70,8 @@ class Etudiant
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotBlank(message="Le champs ne doit pas être vide.")
+     * @Assert\Regex("/^[7][0|7|8|6]([0-9]{7})$/", message="N° de telephone non valide")
      */
     private $telephone;
 

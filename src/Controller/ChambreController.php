@@ -56,9 +56,10 @@ class ChambreController extends AbstractController
         if($request->isMethod('POST') && $form->handleRequest($request)->isValid())
         {
             $numBuild = $chambre->getNumBatiment();
-
+            $status= "actif";
             $genered = $this->genererNum($nombre, $numBuild);
             $chambre->setNumChambre($genered);
+            $chambre->setStatus($status);
             $em->persist($chambre);
             $em->flush();
             $this->addFlash(
@@ -86,10 +87,10 @@ class ChambreController extends AbstractController
     {
 
         $em = $this->getDoctrine()->getManager();
-        //$rooms = $em->getRepository(Chambre::class)->findAll();
+        $rooms = $em->getRepository(Chambre::class)->findRoom();
 
-        $dql   = "SELECT chambre FROM App:Chambre chambre";
-        $rooms = $em->createQuery($dql);
+       // $dql   = "SELECT chambre FROM App:Chambre chambre WHERE chambre";
+      //  $rooms = $em->createQuery($dql);
 
         $pagination= $paginator->paginate(
             $rooms,
@@ -116,11 +117,12 @@ class ChambreController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid())
         {
+            $status="actif";
             $numBuild = $chambre->getNumBatiment();
             $id= $chambre->getId();
             $genered = $this->genererNum($id, $numBuild);
             $chambre->setNumChambre($genered);
-
+            $chambre->setStatus($status);
             $em->flush();
             $this->addFlash(
                 'notice',
@@ -144,41 +146,27 @@ class ChambreController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();
         $conn = $em->getConnection();
-        $sql = 'SELECT * FROM Etudiant e WHERE e.num_chambre_id > :num';
-
+        $sql = 'SELECT * FROM Etudiant e WHERE e.num_chambre_id = :num';
         $stmt = $conn->prepare($sql);
         $stmt->execute(['num' => $id]);
-
-
         $momo= $stmt->fetch();
 
-
-        dump($momo);
        if(empty($momo)){
-
-
             $chambre = $em->getRepository(Chambre::class)->find($id);
             $em->remove($chambre);
             $em->flush();
-
             $this->addFlash(
                 'notice',
                 'Chambre supprimée avec succès!'
             );
-
-
-
-        }elseif(!empty($momo)){
+        }elseif(!empty($momo))
+       {
             $this->addFlash(
                 'notice',
                 'Chambre occupée!'
             );
             return $this->redirectToRoute('list_room.index');
-
-
         }
-
        return $this->redirectToRoute('list_room.index');
-
     }
 }
